@@ -10,12 +10,16 @@ from app.storage.files import JobPaths
 
 
 def build_zip(job_id: str) -> bytes:
-    """Return a ZIP byte blob with all available artifacts for ``job_id``."""
+    """Return a ZIP byte blob with the anonymized artifacts for ``job_id``.
+
+    The archive deliberately excludes the original input audio and the
+    full (non-redacted) transcript — those contain raw PII and must not
+    leave the server. Only the redacted audio, the redacted transcript
+    and the PII event log are shipped.
+    """
     paths = JobPaths(job_id, Path(get_settings().data_dir))
     candidates = [
-        paths.input_wav,
         paths.redacted_wav,
-        paths.transcript_full,
         paths.transcript_redacted,
         paths.events,
     ]

@@ -29,19 +29,20 @@ def stub_job(tmp_path, monkeypatch):
     return job_id
 
 
-def test_zip_contains_all_artifacts(stub_job):
+def test_zip_contains_only_redacted_artifacts(stub_job):
     blob = build_zip(stub_job)
     with zipfile.ZipFile(io.BytesIO(blob), "r") as zf:
         names = set(zf.namelist())
     required_suffixes = [
-        "/input.wav",
         "/redacted.wav",
-        "/transcript_full.json",
         "/transcript_redacted.json",
         "/events.jsonl",
     ]
     for suffix in required_suffixes:
         assert any(n.endswith(suffix) for n in names), f"missing {suffix} in {names}"
+    # Raw PII artefacts must never leak through the export.
+    assert not any(n.endswith("/input.wav") for n in names)
+    assert not any(n.endswith("/transcript_full.json") for n in names)
 
 
 def test_zip_skips_missing_files(stub_job, tmp_path):
@@ -50,4 +51,5 @@ def test_zip_skips_missing_files(stub_job, tmp_path):
     with zipfile.ZipFile(io.BytesIO(blob), "r") as zf:
         names = set(zf.namelist())
     assert not any(n.endswith("/redacted.wav") for n in names)
-    assert any(n.endswith("/input.wav") for n in names)
+    assert any(n.endswith("/transcript_redacted.json") for n in names)
+    assert any(n.endswith("/events.jsonl") for n in names)
