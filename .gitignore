@@ -1,0 +1,54 @@
+# Virtual environment
+.venv/
+venv/
+env/
+
+# Runtime artifacts
+data/
+models/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Environment
+.env
+
+# Editors / OS / Claude
+.vscode/
+.idea/
+.claude/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Packaging / build
+*.egg-info/
+build/
+dist/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Logs
+*.log
+
+# Local test artifacts (Telegram drops, screenshots)
+audio_*.wav
+audio_*.ogg
+photo_*.jpg
+
+# Internal planning docs and personal launchers (local only)
+docs/
+zadaniye.txt
+dev.bat
+dev.sh

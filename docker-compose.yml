@@ -1,0 +1,60 @@
+services:
+  backend:
+    build: .
+    image: tula-backend:dev
+    container_name: tula_backend
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      DATA_DIR: /app/data
+      MODELS_DIR: /app/models
+      DATABASE_PATH: /app/data/app.db
+    volumes:
+      - ./data:/app/data
+      - ./models:/app/models
+      - ./examples:/app/examples:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    image: tula-frontend:dev
+    container_name: tula_frontend
+    depends_on:
+      - backend
+    ports:
+      - "5180:80"
+    restart: unless-stopped
+
+  tunnel:
+    image: cloudflare/cloudflared:2024.12.2
+    container_name: tula_tunnel
+    profiles: ["share"]
+    depends_on:
+      - frontend
+    command: >
+      tunnel --no-autoupdate
+      --protocol http2
+      --edge-ip-version 4
+      --region us
+      --url http://frontend:80
+    restart: unless-stopped
+
+  # Альтернативный share-профиль: pinggy (работает через TCP 443,
+  # полезен если ISP режет Cloudflare edge). Включается профилем
+  # `share-pinggy` вместо `share`.
+  tunnel_pinggy:
+    image: pinggy/pinggy:latest
+    container_name: tula_tunnel_pinggy
+    profiles: ["share-pinggy"]
+    depends_on:
+      - frontend
+    command: -p 443 -R0:frontend:80 -o StrictHostKeyChecking=no -o ServerAliveInterval=30 a.pinggy.io
+    restart: unless-stopped

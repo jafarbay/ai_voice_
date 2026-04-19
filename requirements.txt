@@ -1,0 +1,40 @@
+# Web framework
+fastapi>=0.110,<0.120
+uvicorn[standard]>=0.27,<0.35
+python-multipart>=0.0.9,<0.1
+
+# Validation / config
+pydantic>=2.6,<3.0
+pydantic-settings>=2.2,<3.0
+python-dotenv>=1.0,<2.0
+
+# STT (GPU)
+faster-whisper>=1.0,<2.0
+
+# Diarization
+pyannote.audio>=3.1,<4.0
+
+# NER (Russian)
+natasha>=1.6,<2.0
+# pymorphy2 (a natasha dep) still relies on pkg_resources, which was removed
+# from setuptools 81. Pin below 81 until pymorphy2 upgrades.
+setuptools<81
+
+# LLM (local GGUF)
+llama-cpp-python>=0.2.70,<0.4
+
+# Audio
+pydub>=0.25,<0.26
+numpy>=1.26,<3.0
+soundfile>=0.12,<0.14
+ffmpeg-python>=0.2,<0.3
+
+# Logging
+structlog>=24.1,<26.0
+
+# Tests
+pytest>=8.0,<9.0
+httpx>=0.27,<0.29
+
+# TTS for generating test fixtures (Windows SAPI5, offline)
+pyttsx3>=2.90,<3.0
